@@ -12,82 +12,86 @@ import { Alphabet } from '@core/models';
     standalone: true,
     imports: [CommonModule, FormsModule],
     template: `
-    <div class="min-h-screen bg-gradient-to-br from-pastel-blue via-pastel-purple to-pastel-pink pb-24 md:pb-12">
-      <!-- Header -->
-      <div class="bg-gradient-to-r from-secondary to-primary p-6 md:p-8 shadow-soft-lg">
-        <div class="max-w-4xl mx-auto">
-          <div class="flex items-center justify-between mb-4">
-            <h1 class="text-3xl md:text-4xl font-bold text-white">Learn Alphabets! 🔤</h1>
-            <button (click)="goBack()" class="btn-icon bg-white text-secondary hover:bg-gray-100">
+    <div class="min-h-screen bg-gradient-to-br from-pastel-blue via-pastel-purple to-pastel-pink pb-32">
+      <!-- Floating Header Card -->
+      <header class="px-5 pt-8 md:px-10">
+        <div class="mx-auto max-w-4xl">
+          <div class="card-floating p-6 md:p-8 flex flex-col gap-4 relative">
+            <button (click)="goBack()" 
+              class="absolute right-6 top-6 btn-icon bg-slate-100 text-primary hover:bg-slate-200 w-10 h-10 flex items-center justify-center rounded-full text-base font-black">
               ✕
             </button>
-          </div>
-          <!-- Voice Selector -->
-          <div class="flex items-center gap-3 bg-white bg-opacity-20 backdrop-blur rounded-xl p-4">
-            <label class="text-white font-bold text-sm md:text-base">🔊 Choose Voice:</label>
-            <select
-              [(ngModel)]="selectedVoiceIndex"
-              (change)="onVoiceChanged()"
-              class="px-4 py-2 rounded-lg border-2 border-white bg-white text-secondary font-bold cursor-pointer focus:outline-none"
-            >
-              <option *ngFor="let voice of availableVoices; let i = index" [value]="i">
-                {{ getVoiceName(voice) }}
-              </option>
-            </select>
-            <button
-              (click)="playVoiceDemo()"
-              class="btn-secondary px-4 py-2 text-sm whitespace-nowrap"
-            >
-              🔊 Test Voice
-            </button>
+            <div>
+              <p class="text-xs uppercase tracking-widest font-black text-pink-500 mb-2">SPEECH QUEST</p>
+              <h1 class="text-3xl md:text-4xl font-black text-pink-500">Learn Alphabets! 🔤</h1>
+            </div>
+            <!-- Voice Selector -->
+            <div class="flex flex-wrap items-center gap-3 bg-slate-50 rounded-2xl p-4 border border-slate-100 mt-2">
+              <label class="text-slate-600 font-black text-xs uppercase tracking-wider">🔊 Choose Voice:</label>
+              <select
+                [(ngModel)]="selectedVoiceIndex"
+                (change)="onVoiceChanged()"
+                class="px-4 py-2 rounded-xl border-2 border-slate-200 bg-white text-secondary font-bold cursor-pointer focus:outline-none text-sm"
+              >
+                <option *ngFor="let voice of availableVoices; let i = index" [value]="i">
+                  {{ getVoiceName(voice) }}
+                </option>
+              </select>
+              <button
+                (click)="playVoiceDemo()"
+                class="btn-secondary px-4 py-2 text-xs rounded-xl"
+              >
+                🔊 Test Voice
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
       <!-- Main content -->
-      <div class="max-w-4xl mx-auto px-6 md:px-8 py-8">
+      <div class="max-w-4xl mx-auto px-5 py-8 md:px-10">
         <!-- Progress indicator -->
         <div class="mb-8">
           <div class="flex items-center justify-between mb-3">
-            <p class="text-sm font-bold text-primary">Progress: {{ currentIndex + 1 }}/{{ alphabets.length }}</p>
-            <p class="text-sm font-bold text-secondary">{{ ((currentIndex + 1) / alphabets.length * 100).toFixed(0) }}%</p>
+            <p class="text-xs uppercase tracking-widest font-black text-pink-500">Progress: {{ currentIndex + 1 }}/{{ alphabets.length }}</p>
+            <p class="text-sm font-black text-cyan-500">{{ ((currentIndex + 1) / alphabets.length * 100).toFixed(0) }}%</p>
           </div>
-          <div class="bg-white rounded-full h-3 overflow-hidden shadow-soft">
+          <div class="bg-slate-100 rounded-full h-5 overflow-hidden border-2 border-white shadow-inner relative">
             <div
-              class="bg-gradient-to-r from-secondary to-primary h-full animate-pulse-glow transition-all duration-500"
+              class="h-full rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-emerald-400 animated-xp transition-all duration-500"
               [style.width.%]="((currentIndex + 1) / alphabets.length * 100)"
             ></div>
           </div>
         </div>
 
         <!-- Main alphabet card -->
-        <div class="card-floating p-12 mb-8 text-center shadow-soft-lg transform animate-scale-up">
+        <div class="card-floating p-8 md:p-12 mb-8 text-center shadow-soft-lg transform animate-scale-up">
           <!-- Example image/emoji -->
-          <div class="text-7xl mb-8 animate-float drop-shadow-lg">
+          <div class="text-8xl mb-6 animate-float drop-shadow-lg select-none">
             {{ currentAlphabet?.exampleImage }}
           </div>
 
           <!-- Pronunciation guide -->
-          <div class="bg-gradient-to-r from-pastel-yellow to-yellow-50 rounded-2xl p-6 mb-8 border-4 border-accent-yellow">
-            <p class="text-sm text-gray-600 font-semibold mb-2">HOW TO SAY IT:</p>
-            <p class="text-3xl font-bold text-primary">{{ currentAlphabet?.pronunciation }}</p>
+          <div class="bg-gradient-to-r from-amber-100 to-amber-50 rounded-[2rem] p-6 mb-8 border-4 border-amber-300">
+            <p class="text-xs font-black uppercase text-amber-600 tracking-wider mb-2">How to say it</p>
+            <p class="text-4xl font-black text-pink-600 font-fredoka">{{ currentAlphabet?.pronunciation }}</p>
           </div>
 
           <!-- Main letter -->
           <div class="mb-8">
-            <div class="text-9xl font-bold bg-gradient-to-br from-secondary to-primary text-transparent bg-clip-text animate-pulse drop-shadow-lg">
+            <div class="text-9xl font-black bg-gradient-to-br from-pink-500 via-purple-500 to-sky-500 text-transparent bg-clip-text drop-shadow-sm select-none font-fredoka">
               {{ currentAlphabet?.letter }}
             </div>
           </div>
 
           <!-- Example word -->
-          <div class="bg-white rounded-2xl p-6 mb-8 shadow-soft">
-            <p class="text-sm text-gray-600 font-semibold mb-2">EXAMPLE WORD:</p>
-            <p class="text-3xl font-bold text-primary">{{ currentAlphabet?.exampleWord }}</p>
+          <div class="bg-slate-50 rounded-[2rem] p-6 mb-8 border border-slate-100">
+            <p class="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">Example word</p>
+            <p class="text-4xl font-black text-pink-600 font-fredoka mb-4">{{ currentAlphabet?.exampleWord }}</p>
             <!-- Play example word sound button -->
             <button
               (click)="speakWord(currentAlphabet?.exampleWord)"
-              class="btn-secondary px-6 py-2 text-sm mt-3"
+              class="btn-secondary px-6 py-2.5 text-xs rounded-full font-black uppercase tracking-wider"
             >
               🔊 Hear "{{ currentAlphabet?.exampleWord }}"
             </button>
@@ -96,56 +100,52 @@ import { Alphabet } from '@core/models';
           <!-- Voice button -->
           <button
             (click)="playSound()"
-            class="btn-primary px-10 py-4 text-lg transform hover:scale-110 active:scale-95 animate-bounce-slow"
+            class="w-full sm:w-auto rounded-full bg-gradient-to-r from-pink-500 to-pink-600 px-10 py-5 text-xl font-black text-white shadow-neon hover:scale-105 active:scale-95 transition-all duration-300 animate-bounce-slow"
           >
             🔊 Hear the Sound
           </button>
         </div>
 
         <!-- Learning tips -->
-        <div class="card-floating p-6 mb-8 bg-gradient-to-r from-pastel-green to-green-50">
-          <h3 class="text-lg font-bold text-primary mb-3">💡 Learning Tip</h3>
-          <p class="text-secondary font-semibold">
+        <div class="card-floating p-6 mb-8 bg-gradient-to-r from-emerald-50 to-teal-50 border-4 border-emerald-300">
+          <h3 class="text-lg font-black text-emerald-600 mb-2">💡 Learning Tip</h3>
+          <p class="text-teal-700 font-bold text-sm">
             Try to pronounce the letter and the example word together: "{{ currentAlphabet?.pronunciation }} for {{ currentAlphabet?.exampleWord }}"
           </p>
         </div>
 
         <!-- Navigation buttons -->
-        <div class="grid grid-cols-2 gap-4 md:flex md:gap-6 md:justify-between">
+        <div class="grid grid-cols-3 gap-3">
           <button
             (click)="previousAlphabet()"
             [disabled]="currentIndex === 0"
-            [class.opacity-50]="currentIndex === 0"
-            [class.cursor-not-allowed]="currentIndex === 0"
-            class="btn-secondary px-6 py-3 transform hover:scale-110 active:scale-95"
+            class="btn-secondary py-4 rounded-full font-black text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            ← Previous
+            ← Back
           </button>
 
           <button
             (click)="skipAlphabet()"
-            class="btn-icon bg-gradient-to-r from-accent-yellow to-yellow-400 text-white transform hover:scale-110 active:scale-95"
+            class="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white font-black text-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300 shadow-soft"
           >
-            ⊙
+            ⭐
           </button>
 
           <button
             (click)="nextAlphabet()"
             [disabled]="currentIndex === alphabets.length - 1"
-            [class.opacity-50]="currentIndex === alphabets.length - 1"
-            [class.cursor-not-allowed]="currentIndex === alphabets.length - 1"
-            class="btn-primary px-6 py-3 transform hover:scale-110 active:scale-95"
+            class="rounded-full bg-gradient-to-r from-pink-500 to-pink-600 text-white py-4 font-black text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 transition-all duration-300 shadow-soft"
           >
             Next →
           </button>
         </div>
 
         <!-- Done learning -->
-        <div *ngIf="currentIndex === alphabets.length - 1" class="mt-8 text-center">
-          <p class="text-xl font-bold text-primary mb-4">Great job! You've learned all alphabets! 🎉</p>
+        <div *ngIf="currentIndex === alphabets.length - 1" class="mt-12 text-center animate-scale-up">
+          <p class="text-2xl font-black text-pink-600 mb-6">Great job! You've learned all alphabets! 🎉</p>
           <button
             (click)="completeLearning()"
-            class="btn-primary px-8 py-4 text-lg"
+            class="rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-10 py-5 text-lg font-black text-white shadow-neon hover:scale-105 active:scale-95 transition-all duration-300"
           >
             ✨ Earn Reward & Go Back
           </button>
@@ -157,15 +157,9 @@ import { Alphabet } from '@core/models';
         *ngIf="showCelebration"
         class="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
       >
-        <div class="text-6xl animate-bounce-slow">
-          🎉
-        </div>
-        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.2s">
-          ⭐
-        </div>
-        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.4s">
-          🎊
-        </div>
+        <div class="text-6xl animate-bounce-slow">🎉</div>
+        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.2s">⭐</div>
+        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.4s">🎊</div>
       </div>
     </div>
   `,

@@ -18,49 +18,56 @@ interface PuzzlePiece {
     standalone: true,
     imports: [CommonModule],
     template: `
-    <div class="min-h-screen bg-gradient-to-br from-pastel-yellow via-pastel-orange to-pastel-pink pb-24 md:pb-12">
-      <!-- Header with timer -->
-      <div class="bg-gradient-to-r from-warning to-primary p-6 md:p-8 shadow-soft-lg">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl md:text-4xl font-bold text-white">Puzzle Game! 🧩</h1>
-            <p class="text-white opacity-90 font-semibold">{{ currentPuzzle?.title }}</p>
-          </div>
-          <div class="text-center bg-white bg-opacity-20 backdrop-blur rounded-2xl px-6 py-3">
-            <p class="text-white text-sm opacity-90">Time Left</p>
-            <p class="text-4xl font-bold text-white">{{ timeLeft }}s</p>
+    <div class="min-h-screen bg-gradient-to-br from-pastel-yellow via-pastel-orange to-pastel-pink pb-32">
+      <!-- Floating Header Card -->
+      <header class="px-5 pt-8 md:px-10">
+        <div class="mx-auto max-w-4xl">
+          <div class="card-floating p-6 md:p-8 flex items-center justify-between relative">
+            <button (click)="goBack()" 
+              class="absolute right-6 top-6 btn-icon bg-slate-100 text-primary hover:bg-slate-200 w-10 h-10 flex items-center justify-center rounded-full text-base font-black">
+              ✕
+            </button>
+            <div>
+              <p class="text-xs uppercase tracking-widest font-black text-pink-500 mb-2">LOGIC QUEST</p>
+              <h1 class="text-3xl md:text-4xl font-black text-pink-500">Puzzle Game! 🧩</h1>
+              <p class="text-slate-500 font-bold text-sm mt-1">{{ currentPuzzle?.title }}</p>
+            </div>
+            <div class="text-center bg-pink-500 rounded-2xl px-5 py-3 text-white border-2 border-white shadow-soft">
+              <p class="text-[10px] font-black uppercase tracking-wider opacity-90">Time Left</p>
+              <p class="text-3xl font-black font-fredoka mt-0.5">{{ timeLeft }}s</p>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
       <!-- Main content -->
-      <div class="max-w-4xl mx-auto px-6 md:px-8 py-8">
+      <div class="max-w-4xl mx-auto px-5 py-8 md:px-10">
         <!-- Puzzle area -->
-        <div class="card-floating p-12 mb-8 text-center shadow-soft-lg">
+        <div class="card-floating p-8 md:p-12 mb-8 text-center shadow-soft-lg">
           <!-- Puzzle image/emoji -->
-          <div class="text-9xl mb-8 animate-float drop-shadow-lg">
+          <div class="text-8xl mb-8 animate-float drop-shadow-lg select-none">
             {{ currentPuzzle?.image }}
           </div>
 
           <!-- Puzzle grid -->
-          <div class="grid grid-cols-3 gap-4 bg-gradient-to-br from-pastel-blue to-pastel-purple rounded-3xl p-8 mb-8 shadow-soft">
+          <div class="grid grid-cols-3 gap-4 bg-gradient-to-br from-pastel-blue to-pastel-purple rounded-3xl p-6 md:p-8 mb-8 shadow-soft">
             <div
               *ngFor="let piece of puzzlePieces"
               (click)="selectPiece(piece)"
               [class.opacity-50]="piece.placed"
               [class.cursor-not-allowed]="piece.placed"
-              class="card-floating p-4 text-center cursor-pointer transform hover:scale-105 active:scale-95 transition-all"
+              class="card-floating p-4 text-center cursor-pointer transform hover:scale-105 active:scale-95 transition-all flex flex-col items-center justify-center min-h-[110px]"
               [class.border-4]="selectedPiece?.id === piece.id"
               [class.border-accent-green]="selectedPiece?.id === piece.id"
             >
-              <div class="text-5xl">{{ piece.emoji }}</div>
-              <p class="text-xs font-bold text-primary mt-2">Piece {{ piece.position + 1 }}</p>
+              <div class="text-5xl select-none">{{ piece.emoji }}</div>
+              <p class="text-xs font-black text-pink-500 mt-2">Piece {{ piece.position + 1 }}</p>
             </div>
           </div>
 
           <!-- Instructions -->
-          <div class="bg-gradient-to-r from-pastel-green to-green-50 rounded-2xl p-6">
-            <p class="text-lg font-bold text-primary">
+          <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-[2rem] p-5 border-4 border-emerald-300">
+            <p class="text-lg font-black text-emerald-600">
               <span *ngIf="!puzzleComplete">✨ Click on puzzle pieces to place them! ({{ placedCount }}/{{ currentPuzzle?.pieces }})</span>
               <span *ngIf="puzzleComplete">🎉 Puzzle Complete!</span>
             </p>
@@ -69,25 +76,29 @@ interface PuzzlePiece {
 
         <!-- Stats -->
         <div class="grid grid-cols-3 gap-4 mb-8">
-          <div class="card-floating p-4 text-center">
-            <p class="text-sm text-gray-600 font-semibold">Pieces Placed</p>
-            <p class="text-4xl font-bold text-primary">{{ placedCount }}/{{ currentPuzzle?.pieces }}</p>
+          <div class="card-floating p-4 text-center flex flex-col justify-center items-center">
+            <p class="text-xs font-black uppercase text-slate-500 tracking-wider">Pieces Placed</p>
+            <p class="text-3xl font-black text-pink-500 font-fredoka mt-1">{{ placedCount }}/{{ currentPuzzle?.pieces }}</p>
           </div>
-          <div class="card-floating p-4 text-center">
-            <p class="text-sm text-gray-600 font-semibold">Progress</p>
-            <p class="text-4xl font-bold text-secondary">{{ ((placedCount / (currentPuzzle?.pieces || 1)) * 100).toFixed(0) }}%</p>
+          <div class="card-floating p-4 text-center flex flex-col justify-center items-center">
+            <p class="text-xs font-black uppercase text-slate-500 tracking-wider">Progress</p>
+            <p class="text-3xl font-black text-cyan-500 font-fredoka mt-1">{{ ((placedCount / (currentPuzzle?.pieces || 1)) * 100).toFixed(0) }}%</p>
           </div>
-          <div class="card-floating p-4 text-center">
-            <p class="text-sm text-gray-600 font-semibold">Difficulty</p>
-            <p class="text-2xl font-bold text-warning">{{ currentPuzzle?.difficulty | titlecase }}</p>
+          <div class="card-floating p-4 text-center flex flex-col justify-center items-center">
+            <p class="text-xs font-black uppercase text-slate-500 tracking-wider">Difficulty</p>
+            <p class="text-2xl font-black text-amber-500 font-fredoka mt-1">{{ currentPuzzle?.difficulty | titlecase }}</p>
           </div>
         </div>
 
         <!-- Progress bar -->
         <div class="card-floating p-6 mb-8">
-          <div class="bg-gray-300 rounded-full h-6 overflow-hidden shadow-soft">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-xs uppercase tracking-widest font-black text-pink-500">Pieces Placed: {{ placedCount }}/{{ currentPuzzle?.pieces }}</p>
+            <p class="text-sm font-black text-cyan-500">{{ ((placedCount / (currentPuzzle?.pieces || 1)) * 100).toFixed(0) }}%</p>
+          </div>
+          <div class="bg-slate-100 rounded-full h-5 overflow-hidden border-2 border-white shadow-inner relative">
             <div
-              class="bg-gradient-to-r from-warning via-primary to-secondary h-full animate-pulse-glow transition-all duration-300"
+              class="h-full rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-emerald-400 animated-xp transition-all duration-300"
               [style.width.%]="((placedCount / (currentPuzzle?.pieces || 1)) * 100)"
             ></div>
           </div>
@@ -97,13 +108,13 @@ interface PuzzlePiece {
         <div class="flex gap-4 justify-center mb-8">
           <button
             (click)="reset()"
-            class="btn-secondary px-6 py-3 transform hover:scale-110 active:scale-95"
+            class="btn-secondary px-8 py-3.5 rounded-full font-black text-sm"
           >
             ↻ Reset
           </button>
           <button
             (click)="goBack()"
-            class="btn-secondary px-6 py-3 transform hover:scale-110 active:scale-95"
+            class="btn-secondary px-8 py-3.5 rounded-full font-black text-sm"
           >
             ← Back
           </button>
@@ -117,7 +128,7 @@ interface PuzzlePiece {
         >
           <div class="modal-content bg-gradient-to-br from-pastel-yellow to-yellow-50 text-center max-w-sm" (click)="$event.stopPropagation()">
             <div class="text-8xl mb-4 animate-bounce-slow">🎉</div>
-            <h2 class="text-3xl font-bold text-primary mb-3">Amazing!</h2>
+            <h2 class="text-3xl font-black text-primary mb-3">Amazing!</h2>
             <p class="text-lg text-secondary font-semibold mb-6">
               You completed the puzzle in {{ getCompletionTime() }} seconds!
             </p>
@@ -129,11 +140,11 @@ interface PuzzlePiece {
               <div class="text-5xl animate-float" style="animation-delay: 0.4s">⭐</div>
             </div>
 
-            <p class="text-2xl font-bold text-accent-green mb-6">+300 XP!</p>
+            <p class="text-2xl font-black text-accent-green mb-6">+300 XP!</p>
 
             <button
               (click)="closePuzzle()"
-              class="btn-primary w-full"
+              class="btn-primary w-full py-4 rounded-full font-black text-base"
             >
               Continue 🚀
             </button>

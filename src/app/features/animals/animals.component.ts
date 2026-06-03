@@ -19,48 +19,52 @@ interface AnimalCard {
     standalone: true,
     imports: [CommonModule, FormsModule],
     template: `
-    <div class="min-h-screen bg-gradient-to-br from-pastel-yellow via-pastel-green to-pastel-blue pb-24 md:pb-12">
-      <!-- Header -->
-      <div class="bg-gradient-to-r from-accent-green to-primary p-6 md:p-8 shadow-soft-lg">
-        <div class="max-w-6xl mx-auto">
-          <div class="flex items-center justify-between mb-4">
-            <h1 class="text-3xl md:text-4xl font-bold text-white">Learn Animals! 🦁</h1>
-            <button (click)="goBack()" class="btn-icon bg-white text-accent-green hover:bg-gray-100">
+    <div class="min-h-screen bg-gradient-to-br from-pastel-yellow via-pastel-green to-pastel-blue pb-32">
+      <!-- Floating Header Card -->
+      <header class="px-5 pt-8 md:px-10">
+        <div class="mx-auto max-w-6xl">
+          <div class="card-floating p-6 md:p-8 flex flex-col gap-4 relative">
+            <button (click)="goBack()" 
+              class="absolute right-6 top-6 btn-icon bg-slate-100 text-primary hover:bg-slate-200 w-10 h-10 flex items-center justify-center rounded-full text-base font-black">
               ✕
             </button>
-          </div>
-          <!-- Voice Selector -->
-          <div class="flex items-center gap-3 bg-white bg-opacity-20 backdrop-blur rounded-xl p-4">
-            <label class="text-white font-bold text-sm md:text-base">🔊 Choose Voice:</label>
-            <select
-              [(ngModel)]="selectedVoiceIndex"
-              (change)="onVoiceChanged()"
-              class="px-4 py-2 rounded-lg border-2 border-white bg-white text-accent-green font-bold cursor-pointer focus:outline-none"
-            >
-              <option *ngFor="let voice of availableVoices; let i = index" [value]="i">
-                {{ getVoiceName(voice) }}
-              </option>
-            </select>
-            <button
-              (click)="playVoiceDemo()"
-              class="btn-secondary px-4 py-2 text-sm whitespace-nowrap"
-            >
-              🔊 Test Voice
-            </button>
+            <div>
+              <p class="text-xs uppercase tracking-widest font-black text-pink-500 mb-2">WILDLIFE QUEST</p>
+              <h1 class="text-3xl md:text-4xl font-black text-pink-500">Learn Animals! 🦁</h1>
+            </div>
+            <!-- Voice Selector -->
+            <div class="flex flex-wrap items-center gap-3 bg-slate-50 rounded-2xl p-4 border border-slate-100 mt-2">
+              <label class="text-slate-600 font-black text-xs uppercase tracking-wider">🔊 Choose Voice:</label>
+              <select
+                [(ngModel)]="selectedVoiceIndex"
+                (change)="onVoiceChanged()"
+                class="px-4 py-2 rounded-xl border-2 border-slate-200 bg-white text-secondary font-bold cursor-pointer focus:outline-none text-sm"
+              >
+                <option *ngFor="let voice of availableVoices; let i = index" [value]="i">
+                  {{ getVoiceName(voice) }}
+                </option>
+              </select>
+              <button
+                (click)="playVoiceDemo()"
+                class="btn-secondary px-4 py-2 text-xs rounded-xl"
+              >
+                🔊 Test Voice
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <!-- Progress Bar -->
-      <div class="bg-white shadow-soft p-4 md:p-6">
-        <div class="max-w-6xl mx-auto">
+      <!-- Progress Bar Section -->
+      <div class="max-w-6xl mx-auto px-5 pt-8 md:px-10">
+        <div class="mb-4">
           <div class="flex items-center justify-between mb-3">
-            <p class="text-sm font-bold text-accent-green">Progress: {{ completedCount }}/{{ animalCards.length }}</p>
-            <p class="text-sm font-bold text-primary">{{ (completedCount / animalCards.length * 100).toFixed(0) }}%</p>
+            <p class="text-xs uppercase tracking-widest font-black text-pink-500">Progress: {{ completedCount }}/{{ animalCards.length }}</p>
+            <p class="text-sm font-black text-cyan-500">{{ (completedCount / animalCards.length * 100).toFixed(0) }}%</p>
           </div>
-          <div class="bg-gray-200 rounded-full h-4 overflow-hidden">
+          <div class="bg-slate-100 rounded-full h-5 overflow-hidden border-2 border-white shadow-inner relative">
             <div
-              class="bg-gradient-to-r from-accent-green to-primary h-full transition-all duration-500"
+              class="h-full rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-emerald-400 animated-xp transition-all duration-500"
               [style.width.%]="(completedCount / animalCards.length * 100)"
             ></div>
           </div>
@@ -68,33 +72,33 @@ interface AnimalCard {
       </div>
 
       <!-- Main content -->
-      <div class="max-w-6xl mx-auto px-6 md:px-8 py-8">
+      <div class="max-w-6xl mx-auto px-5 py-8 md:px-10">
         <!-- Animal cards grid -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <div
             *ngFor="let card of animalCards; let i = index"
             (click)="selectAnimal(card, i)"
-            class="card-floating p-6 cursor-pointer transform hover:scale-110 active:scale-95 transition-all duration-300 shadow-soft-lg bg-gradient-to-br from-white to-gray-50"
+            class="card-floating p-6 cursor-pointer transform hover:scale-105 active:scale-95 transition-all duration-300 flex flex-col justify-between items-center text-center bg-white border-4 border-slate-50 min-h-[220px]"
           >
             <!-- Animal emoji -->
-            <div class="text-6xl mb-4 text-center animate-float">
+            <div class="text-6xl mb-3 animate-float drop-shadow-sm select-none">
               {{ card.emoji }}
             </div>
 
             <!-- Animal name -->
-            <h3 class="text-lg font-bold text-center text-primary mb-3">{{ card.name }}</h3>
+            <h3 class="text-xl font-black text-slate-700 mb-4 font-fredoka">{{ card.name }}</h3>
 
             <!-- Hear button -->
             <button
               (click)="speakAnimal(card); $event.stopPropagation()"
-              class="btn-secondary w-full px-3 py-2 text-sm"
+              class="w-full rounded-full bg-slate-100 text-pink-500 font-black px-4 py-2 hover:bg-pink-50 transition-colors text-xs uppercase tracking-wider"
             >
               🔊 Hear
             </button>
 
             <!-- Completed badge -->
-            <div *ngIf="isCompleted(i)" class="mt-3 px-3 py-1 bg-gradient-to-r from-accent-green to-green-400 text-white rounded-full text-xs font-bold text-center">
-              ✓ Done
+            <div *ngIf="isCompleted(i)" class="mt-3 px-3 py-1 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white rounded-full text-[10px] font-black tracking-wider uppercase shadow-soft">
+              ✓ Learned
             </div>
           </div>
         </div>
@@ -103,14 +107,14 @@ interface AnimalCard {
         <div class="flex gap-4 justify-center flex-wrap mt-12">
           <button
             (click)="goBack()"
-            class="btn-secondary px-8 py-3"
+            class="btn-secondary px-8 py-3.5 rounded-full font-black text-sm"
           >
             ← Back
           </button>
           <button
             *ngIf="completedCount === animalCards.length"
             (click)="completeLearning()"
-            class="btn-primary px-8 py-3 text-lg"
+            class="rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white px-8 py-3.5 hover:scale-105 active:scale-95 transition-all font-black text-sm shadow-neon animate-pulse-glow"
           >
             ✨ All Done! Earn Reward
           </button>
@@ -118,43 +122,43 @@ interface AnimalCard {
       </div>
 
       <!-- Animal Info Modal -->
-      <div *ngIf="showAnimalModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-3xl p-8 max-w-md w-11/12 card-floating">
-          <div class="text-center mb-6">
-            <p class="text-lg font-bold text-accent-green mb-2">Meet the Animal!</p>
-            <div class="text-7xl mb-4 animate-bounce-slow">{{ selectedAnimalCard?.emoji }}</div>
-            <h3 class="text-4xl font-bold text-primary mb-2">{{ selectedAnimalCard?.name }}</h3>
+      <div *ngIf="showAnimalModal" class="fixed inset-0 bg-black/45 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="card-floating p-8 max-w-md w-full animate-scale-up text-center relative flex flex-col justify-between">
+          <div class="mb-6">
+            <p class="text-xs uppercase tracking-widest font-black text-emerald-500 mb-2">Meet the Animal!</p>
+            <div class="text-8xl mb-4 animate-bounce-slow drop-shadow-lg select-none">{{ selectedAnimalCard?.emoji }}</div>
+            <h3 class="text-4xl font-black text-pink-500 font-fredoka mb-2">{{ selectedAnimalCard?.name }}</h3>
           </div>
 
           <!-- Animal sound -->
-          <div class="bg-gradient-to-br from-pastel-yellow to-yellow-50 rounded-2xl p-6 mb-6 border-4 border-accent-green">
-            <p class="text-sm text-gray-600 font-semibold mb-2">ANIMAL SOUND:</p>
-            <p class="text-2xl font-bold text-primary mb-4">{{ selectedAnimalCard?.sound }}</p>
+          <div class="bg-gradient-to-r from-amber-100 to-amber-50 rounded-[2rem] p-5 mb-5 border-4 border-amber-300">
+            <p class="text-xs font-black uppercase text-amber-600 tracking-wider mb-1">Animal sound</p>
+            <p class="text-2xl font-black text-pink-600 font-fredoka mb-3">{{ selectedAnimalCard?.sound }}</p>
             <button
               (click)="speakAnimal(selectedAnimalCard)"
-              class="btn-primary w-full py-2"
+              class="w-full rounded-full bg-pink-500 text-white font-black py-2.5 hover:scale-105 active:scale-95 transition-all text-xs uppercase tracking-wider shadow-soft"
             >
               🔊 Play Sound
             </button>
           </div>
 
           <!-- Fun Fact -->
-          <div class="bg-gradient-to-br from-pastel-blue to-blue-50 rounded-2xl p-6 mb-6 border-4 border-primary">
-            <p class="text-sm text-gray-600 font-semibold mb-2">FUN FACT:</p>
-            <p class="text-sm font-bold text-primary">{{ selectedAnimalCard?.funFact }}</p>
+          <div class="bg-gradient-to-r from-sky-100 to-sky-50 rounded-[2rem] p-5 mb-6 border-4 border-sky-300">
+            <p class="text-xs font-black uppercase text-sky-600 tracking-wider mb-1">Fun Fact</p>
+            <p class="text-sm font-bold text-sky-700 leading-relaxed">{{ selectedAnimalCard?.funFact }}</p>
           </div>
 
           <!-- Action buttons -->
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 gap-4">
             <button
               (click)="skipAnimal()"
-              class="btn-secondary py-2"
+              class="btn-secondary py-3.5 rounded-full font-black text-sm"
             >
               Skip
             </button>
             <button
               (click)="markAsCompleted()"
-              class="btn-primary py-2"
+              class="rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-black py-3.5 hover:scale-105 active:scale-95 transition-all text-sm shadow-soft"
             >
               Got it! ✓
             </button>
@@ -167,15 +171,9 @@ interface AnimalCard {
         *ngIf="showCelebration"
         class="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
       >
-        <div class="text-6xl animate-bounce-slow">
-          🎉
-        </div>
-        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.2s">
-          ⭐
-        </div>
-        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.4s">
-          🎊
-        </div>
+        <div class="text-6xl animate-bounce-slow">🎉</div>
+        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.2s">⭐</div>
+        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.4s">🎊</div>
       </div>
     </div>
   `,

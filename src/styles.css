@@ -14,7 +14,7 @@
 
     body {
         @apply bg-gradient-to-br from-pastel-pink via-pastel-blue to-pastel-purple;
-        font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+        font-family: 'Quicksand', 'Fredoka', sans-serif;
     }
 
     h1 {
@@ -37,7 +37,7 @@
 /* Component classes */
 @layer components {
     .card-floating {
-        @apply bg-white/90 backdrop-blur rounded-3xl shadow-soft hover:shadow-soft-lg transform hover:-translate-y-1;
+        @apply bg-white/95 backdrop-blur rounded-[2.5rem] shadow-soft border-4 border-white hover:shadow-soft-lg transform hover:-translate-y-0.5;
     }
 
     .btn-primary {
@@ -157,11 +157,38 @@
     }
 
     .audio-control {
-        @apply fixed top-4 right-4 z-50 flex items-center gap-3 bg-white/80 backdrop-blur rounded-full px-4 py-2 shadow-soft border border-white;
+        @apply fixed top-4 right-4 z-50 flex items-center gap-3 bg-white/95 backdrop-blur rounded-full px-4 py-2 shadow-soft border border-white;
     }
 
     .audio-button {
-        @apply text-xs font-black text-primary;
+        @apply text-xs font-black text-primary hover:scale-105 active:scale-95;
+    }
+
+    .audio-control input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 80px;
+        height: 8px;
+        border-radius: 9999px;
+        background: #ffe4e6;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .audio-control input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #FF1493;
+        border: 2px solid white;
+        box-shadow: 0 2px 5px rgba(255, 20, 147, 0.4);
+        transition: transform 0.1s;
+    }
+
+    .audio-control input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
     }
 
     .premium-dock {

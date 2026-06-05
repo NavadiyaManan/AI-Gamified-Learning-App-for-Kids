@@ -241,7 +241,7 @@ export class DataService {
         pieces: 6,
         difficulty: 'easy',
         image: '🏰',
-        timeLimit: 120,
+        timeLimit: 110,
         maxStars: 3,
         completed: true,
         earnedStars: 3,

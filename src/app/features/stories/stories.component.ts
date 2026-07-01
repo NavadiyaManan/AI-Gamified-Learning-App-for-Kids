@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { DataService } from '@core/services/data.service';
 import { AudioService } from '@core/services/audio.service';
 import { MascotService } from '@core/services/mascot.service';
+import { SettingsService } from '@core/services/settings.service';
 
 interface Story {
     id: number;
@@ -22,48 +23,52 @@ interface Story {
     standalone: true,
     imports: [CommonModule, FormsModule],
     template: `
-    <div class="min-h-screen bg-gradient-to-br from-pastel-purple via-pastel-pink to-pastel-blue pb-24 md:pb-12">
-      <!-- Header -->
-      <div class="bg-gradient-to-r from-secondary to-primary-light p-6 md:p-8 shadow-soft-lg">
-        <div class="max-w-6xl mx-auto">
-          <div class="flex items-center justify-between mb-4">
-            <h1 class="text-3xl md:text-4xl font-bold text-white">Story Time! 📖</h1>
-            <button (click)="goBack()" class="btn-icon bg-white text-secondary hover:bg-gray-100">
+    <div class="min-h-screen bg-gradient-to-br from-pastel-purple via-pastel-pink to-pastel-blue pb-32">
+      <!-- Floating Header Card -->
+      <header class="px-5 pt-8 md:px-10">
+        <div class="mx-auto max-w-6xl">
+          <div class="card-floating p-6 md:p-8 flex flex-col gap-4 relative">
+            <button (click)="goBack()" 
+              class="absolute right-6 top-6 btn-icon bg-slate-100 text-primary hover:bg-slate-200 w-10 h-10 flex items-center justify-center rounded-full text-base font-black">
               ✕
             </button>
-          </div>
-          <!-- Voice Selector -->
-          <div class="flex items-center gap-3 bg-white bg-opacity-20 backdrop-blur rounded-xl p-4">
-            <label class="text-white font-bold text-sm md:text-base">🔊 Choose Voice:</label>
-            <select
-              [(ngModel)]="selectedVoiceIndex"
-              (change)="onVoiceChanged()"
-              class="px-4 py-2 rounded-lg border-2 border-white bg-white text-secondary font-bold cursor-pointer focus:outline-none"
-            >
-              <option *ngFor="let voice of availableVoices; let i = index" [value]="i">
-                {{ getVoiceName(voice) }}
-              </option>
-            </select>
-            <button
-              (click)="playVoiceDemo()"
-              class="btn-secondary px-4 py-2 text-sm whitespace-nowrap"
-            >
-              🔊 Test Voice
-            </button>
+            <div>
+              <p class="text-xs uppercase tracking-widest font-black text-pink-500 mb-2">COZY QUEST</p>
+              <h1 class="text-3xl md:text-4xl font-black text-pink-500">Story Time! 📖</h1>
+            </div>
+            <!-- Voice Selector -->
+            <div class="flex flex-wrap items-center gap-3 bg-slate-50 rounded-2xl p-4 border border-slate-100 mt-2">
+              <label class="text-slate-600 font-black text-xs uppercase tracking-wider">🔊 Choose Voice:</label>
+              <select
+                [(ngModel)]="selectedVoiceIndex"
+                (change)="onVoiceChanged()"
+                class="px-4 py-2 rounded-xl border-2 border-slate-200 bg-white text-secondary font-bold cursor-pointer focus:outline-none text-sm"
+              >
+                <option *ngFor="let voice of availableVoices; let i = index" [value]="i">
+                  {{ getVoiceName(voice) }}
+                </option>
+              </select>
+              <button
+                (click)="playVoiceDemo()"
+                class="btn-secondary px-4 py-2 text-xs rounded-xl"
+              >
+                🔊 Test Voice
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
       <!-- Progress Bar -->
-      <div class="bg-white shadow-soft p-4 md:p-6">
-        <div class="max-w-6xl mx-auto">
+      <div class="max-w-6xl mx-auto px-5 pt-8 md:px-10">
+        <div class="mb-4">
           <div class="flex items-center justify-between mb-3">
-            <p class="text-sm font-bold text-secondary">Stories Read: {{ completedCount }}/{{ stories.length }}</p>
-            <p class="text-sm font-bold text-primary">{{ (completedCount / stories.length * 100).toFixed(0) }}%</p>
+            <p class="text-xs uppercase tracking-widest font-black text-pink-500">Stories Read: {{ completedCount }}/{{ stories.length }}</p>
+            <p class="text-sm font-black text-cyan-500">{{ (completedCount / stories.length * 100).toFixed(0) }}%</p>
           </div>
-          <div class="bg-gray-200 rounded-full h-4 overflow-hidden">
+          <div class="bg-slate-100 rounded-full h-5 overflow-hidden border-2 border-white shadow-inner relative">
             <div
-              class="bg-gradient-to-r from-secondary to-primary h-full transition-all duration-500"
+              class="h-full rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-emerald-400 animated-xp transition-all duration-500"
               [style.width.%]="(completedCount / stories.length * 100)"
             ></div>
           </div>
@@ -71,38 +76,40 @@ interface Story {
       </div>
 
       <!-- Main content -->
-      <div class="max-w-6xl mx-auto px-6 md:px-8 py-8">
+      <div class="max-w-6xl mx-auto px-5 py-8 md:px-10">
         <!-- Story cards grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
             *ngFor="let story of stories; let i = index"
             (click)="selectStory(story, i)"
-            class="card-floating p-6 cursor-pointer transform hover:scale-105 active:scale-95 transition-all duration-300 shadow-soft-lg bg-gradient-to-br from-white to-gray-50 border-2 border-secondary border-opacity-20"
+            class="card-floating p-6 cursor-pointer transform hover:scale-105 active:scale-95 transition-all duration-300 shadow-soft-lg bg-gradient-to-br from-white to-gray-50 border-2 border-secondary border-opacity-20 flex flex-col justify-between min-h-[280px]"
           >
-            <!-- Story emoji -->
-            <div class="text-5xl mb-3 text-center animate-float">
-              {{ story.emoji }}
+            <div>
+              <!-- Story emoji -->
+              <div class="text-5xl mb-3 text-center animate-float select-none">
+                {{ story.emoji }}
+              </div>
+
+              <!-- Story title -->
+              <h3 class="text-lg font-black text-center text-primary mb-2 font-fredoka">{{ story.title }}</h3>
+
+              <!-- Reading time -->
+              <p class="text-xs text-gray-600 text-center mb-3">⏱️ {{ story.readingTime }} min read</p>
+
+              <!-- Description -->
+              <p class="text-sm text-secondary text-center mb-4 line-clamp-2">{{ story.description }}</p>
             </div>
-
-            <!-- Story title -->
-            <h3 class="text-lg font-bold text-center text-primary mb-2">{{ story.title }}</h3>
-
-            <!-- Reading time -->
-            <p class="text-xs text-gray-600 text-center mb-3">⏱️ {{ story.readingTime }} min read</p>
-
-            <!-- Description -->
-            <p class="text-sm text-secondary text-center mb-4 line-clamp-2">{{ story.description }}</p>
 
             <!-- Read button -->
             <button
               (click)="selectStory(story, i); $event.stopPropagation()"
-              class="btn-secondary w-full px-3 py-2 text-sm"
+              class="btn-secondary w-full"
             >
               📖 Read Story
             </button>
 
             <!-- Completed badge -->
-            <div *ngIf="isCompleted(i)" class="mt-3 px-3 py-1 bg-gradient-to-r from-secondary to-blue-400 text-white rounded-full text-xs font-bold text-center">
+            <div *ngIf="isCompleted(i)" class="mt-3 px-3 py-1 bg-gradient-to-r from-secondary to-blue-400 text-white rounded-full text-xs font-black text-center uppercase tracking-wider">
               ✓ Read
             </div>
           </div>
@@ -112,36 +119,36 @@ interface Story {
         <div class="flex gap-4 justify-center flex-wrap mt-12">
           <button
             (click)="goBack()"
-            class="btn-secondary px-8 py-3"
+            class="btn-secondary px-8 py-3.5 rounded-full font-black text-sm"
           >
             ← Back
           </button>
           <button
             *ngIf="completedCount === stories.length"
             (click)="completeLearning()"
-            class="btn-primary px-8 py-3 text-lg"
+            class="btn-primary px-8 py-3.5 text-sm"
           >
-            ✨ All Stories Read! Earn Reward
+            ✨ All Done! Earn Reward
           </button>
         </div>
       </div>
 
       <!-- Story Reading Modal -->
-      <div *ngIf="showStoryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-96 overflow-y-auto card-floating">
+      <div *ngIf="showStoryModal" class="fixed inset-0 bg-black/45 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-[2.5rem] max-w-2xl w-full max-h-[85vh] overflow-y-auto card-floating p-0 flex flex-col">
           <!-- Header -->
-          <div class="bg-gradient-to-r from-secondary to-primary p-6 sticky top-0">
+          <div class="bg-gradient-to-r from-secondary to-primary p-6 rounded-t-[2.5rem]">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="text-4xl">{{ selectedStory?.emoji }}</div>
+                <div class="text-4xl select-none">{{ selectedStory?.emoji }}</div>
                 <div>
-                  <h2 class="text-2xl font-bold text-white">{{ selectedStory?.title }}</h2>
-                  <p class="text-white opacity-90 text-sm">⏱️ {{ selectedStory?.readingTime }} min</p>
+                  <h2 class="text-2xl font-black text-white font-fredoka">{{ selectedStory?.title }}</h2>
+                  <p class="text-white opacity-90 text-xs font-black uppercase tracking-wider">⏱️ {{ selectedStory?.readingTime }} min read</p>
                 </div>
               </div>
               <button
                 (click)="closeModal()"
-                class="text-white text-2xl font-bold hover:text-gray-200"
+                class="text-white text-3xl font-black hover:text-gray-200"
               >
                 ✕
               </button>
@@ -149,21 +156,21 @@ interface Story {
           </div>
 
           <!-- Story Content -->
-          <div class="p-8">
+          <div class="p-8 overflow-y-auto">
             <!-- Story text -->
             <div class="mb-8">
-              <p class="text-base text-gray-700 leading-relaxed whitespace-pre-wrap font-semibold mb-4">
+              <p class="text-lg text-gray-700 leading-relaxed whitespace-pre-wrap font-semibold mb-4">
                 {{ selectedStory?.content }}
               </p>
             </div>
 
             <!-- Characters -->
-            <div class="mb-8 bg-gradient-to-r from-pastel-yellow to-yellow-50 rounded-2xl p-6 border-2 border-warning">
-              <p class="text-sm text-gray-600 font-semibold mb-3">CHARACTERS IN THIS STORY:</p>
+            <div class="mb-8 bg-gradient-to-r from-pastel-yellow to-yellow-50 rounded-3xl p-6 border-2 border-warning">
+              <p class="text-xs text-gray-600 font-black tracking-widest uppercase mb-3">Characters in this story:</p>
               <div class="flex flex-wrap gap-3">
                 <div
                   *ngFor="let char of selectedStory?.characters"
-                  class="px-4 py-2 bg-white rounded-full border-2 border-secondary text-primary font-bold text-sm"
+                  class="px-4 py-2 bg-white rounded-full border-2 border-secondary text-primary font-black text-sm"
                 >
                   {{ char }}
                 </div>
@@ -171,38 +178,38 @@ interface Story {
             </div>
 
             <!-- Moral/Lesson -->
-            <div class="mb-8 bg-gradient-to-r from-pastel-green to-green-50 rounded-2xl p-6 border-2 border-accent-green">
-              <p class="text-sm text-gray-600 font-semibold mb-2">MORAL OF THE STORY:</p>
-              <p class="text-base font-bold text-primary">{{ selectedStory?.moral }}</p>
+            <div class="mb-8 bg-gradient-to-r from-pastel-green to-green-50 rounded-3xl p-6 border-2 border-accent-green">
+              <p class="text-xs text-gray-600 font-black tracking-widest uppercase mb-2">Moral of the story:</p>
+              <p class="text-base font-black text-primary">{{ selectedStory?.moral }}</p>
             </div>
 
             <!-- Voice controls -->
-            <div class="flex gap-3 mb-6">
+            <div class="grid grid-cols-2 gap-4 mb-6">
               <button
                 (click)="speak(selectedStory?.content || '')"
-                class="btn-primary flex-1 py-3"
+                class="btn-primary py-3"
               >
-                🔊 Read Story Aloud
+                🔊 Read Aloud
               </button>
               <button
                 (click)="stopSpeaking()"
-                class="btn-secondary flex-1 py-3"
+                class="btn-secondary py-3"
               >
                 ⏹️ Stop
               </button>
             </div>
 
             <!-- Action buttons -->
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-4 border-t pt-6 border-slate-100">
               <button
                 (click)="closeModal()"
-                class="btn-secondary py-3"
+                class="btn-secondary"
               >
                 Back
               </button>
               <button
                 (click)="markAsCompleted()"
-                class="btn-primary py-3"
+                class="btn-primary"
               >
                 Finished! ✓
               </button>
@@ -216,15 +223,9 @@ interface Story {
         *ngIf="showCelebration"
         class="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
       >
-        <div class="text-6xl animate-bounce-slow">
-          🎉
-        </div>
-        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.2s">
-          ⭐
-        </div>
-        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.4s">
-          🎊
-        </div>
+        <div class="text-6xl animate-bounce-slow">🎉</div>
+        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.2s">⭐</div>
+        <div class="text-6xl animate-bounce-slow" style="animation-delay: 0.4s">🎊</div>
       </div>
     </div>
   `,
@@ -485,7 +486,7 @@ Soon, the whole flock was dancing in their own unique ways, and the lagoon becam
 
 "Let's have a race!" challenged Rascal with a laugh. "I'll finish before you even reach halfway!"
 
-"Okay," agreed Terry calmly. "I will race you to the other side of the forest."
+"Okay," agreed Terry candy. "I will race you to the other side of the forest."
 
 They started the race, and Rascal zoomed ahead so fast that he disappeared. He was so far ahead that he decided to take a nap under a tree, thinking Terry would never catch up.
 
@@ -521,11 +522,19 @@ Rascal learned that speed isn't everything. Determination, consistency, and neve
         private dataService: DataService,
         private router: Router,
         private audio: AudioService,
-        private mascot: MascotService
+        private mascot: MascotService,
+        public settingsService: SettingsService
     ) { }
 
     ngOnInit(): void {
         this.loadAvailableVoices();
+
+        // Narrate instructions on load
+        setTimeout(() => {
+            if (this.settingsService.narrationEnabledValue) {
+                this.speak("Welcome to Story Time! Choose a book to read or listen aloud.");
+            }
+        }, 800);
     }
 
     loadAvailableVoices(): void {
@@ -534,8 +543,9 @@ Rascal learned that speed isn't everything. Determination, consistency, and neve
         if (this.availableVoices.length === 0) {
             this.availableVoices = voices;
         }
-        // Set default voice
-        if (this.availableVoices.length > 0) {
+        // Load voice index from global settings
+        this.selectedVoiceIndex = this.settingsService.selectedVoiceIndexValue;
+        if (this.selectedVoiceIndex >= this.availableVoices.length) {
             this.selectedVoiceIndex = 0;
         }
     }
@@ -545,7 +555,7 @@ Rascal learned that speed isn't everything. Determination, consistency, and neve
     }
 
     onVoiceChanged(): void {
-        // Voice index has been updated via ngModel
+        this.settingsService.setSelectedVoiceIndex(Number(this.selectedVoiceIndex));
     }
 
     playVoiceDemo(): void {
@@ -556,6 +566,13 @@ Rascal learned that speed isn't everything. Determination, consistency, and neve
         this.selectedStory = story;
         this.selectedStoryIndex = index;
         this.showStoryModal = true;
+
+        // Auto announce story title
+        setTimeout(() => {
+            if (this.settingsService.narrationEnabledValue && story) {
+                this.speak(`Now reading: ${story.title}`);
+            }
+        }, 400);
     }
 
     closeModal(): void {
@@ -574,7 +591,7 @@ Rascal learned that speed isn't everything. Determination, consistency, and neve
                 this.dataService.updateChildProgress(child.id, 'stories', 30);
             }
             this.audio.play('success');
-            this.mascot.celebrate('Story finished! Your imagination grew.');
+            this.mascot.celebrate(`Wonderful reading! You finished ${this.selectedStory?.title}!`);
 
             setTimeout(() => {
                 this.closeModal();
@@ -591,12 +608,13 @@ Rascal learned that speed isn't everything. Determination, consistency, and neve
         this.mascot.think('Reading aloud...');
 
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.8;
-        utterance.pitch = 1.2;
+        utterance.rate = 0.85;
+        utterance.pitch = 1.35;
         utterance.volume = 1;
 
-        if (this.availableVoices.length > 0 && this.selectedVoiceIndex < this.availableVoices.length) {
-            utterance.voice = this.availableVoices[this.selectedVoiceIndex];
+        const voiceIdx = this.settingsService.selectedVoiceIndexValue;
+        if (this.availableVoices.length > 0 && voiceIdx < this.availableVoices.length) {
+            utterance.voice = this.availableVoices[voiceIdx];
         }
 
         window.speechSynthesis.speak(utterance);
@@ -611,11 +629,13 @@ Rascal learned that speed isn't everything. Determination, consistency, and neve
         this.audio.play('levelUp');
         this.mascot.celebrate('Story Castle complete!');
         setTimeout(() => {
+            window.speechSynthesis.cancel();
             this.router.navigate(['/dashboard']);
         }, 2000);
     }
 
     goBack(): void {
+        window.speechSynthesis.cancel();
         this.router.navigate(['/dashboard']);
     }
 }

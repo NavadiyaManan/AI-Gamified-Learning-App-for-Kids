@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { DataService } from '@core/services/data.service';
 import { AudioService } from '@core/services/audio.service';
 import { MascotService } from '@core/services/mascot.service';
+import { SettingsService } from '@core/services/settings.service';
 
 interface AnimalCard {
     name: string;
@@ -79,6 +80,7 @@ interface AnimalCard {
             *ngFor="let card of animalCards; let i = index"
             (click)="selectAnimal(card, i)"
             class="card-floating p-6 cursor-pointer transform hover:scale-105 active:scale-95 transition-all duration-300 flex flex-col justify-between items-center text-center bg-white border-4 border-slate-50 min-h-[220px]"
+            [class.animate-wiggle]="clickedCardIndex === i"
           >
             <!-- Animal emoji -->
             <div class="text-6xl mb-3 animate-float drop-shadow-sm select-none">
@@ -91,7 +93,7 @@ interface AnimalCard {
             <!-- Hear button -->
             <button
               (click)="speakAnimal(card); $event.stopPropagation()"
-              class="w-full rounded-full bg-slate-100 text-pink-500 font-black px-4 py-2 hover:bg-pink-50 transition-colors text-xs uppercase tracking-wider"
+              class="btn-secondary w-full py-2 text-xs uppercase tracking-wider"
             >
               🔊 Hear
             </button>
@@ -114,9 +116,9 @@ interface AnimalCard {
           <button
             *ngIf="completedCount === animalCards.length"
             (click)="completeLearning()"
-            class="rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white px-8 py-3.5 hover:scale-105 active:scale-95 transition-all font-black text-sm shadow-neon animate-pulse-glow"
+            class="btn-primary px-8 py-3.5"
           >
-            ✨ All Done! Earn Reward
+            ✨ Earn Reward
           </button>
         </div>
       </div>
@@ -136,7 +138,7 @@ interface AnimalCard {
             <p class="text-2xl font-black text-pink-600 font-fredoka mb-3">{{ selectedAnimalCard?.sound }}</p>
             <button
               (click)="speakAnimal(selectedAnimalCard)"
-              class="w-full rounded-full bg-pink-500 text-white font-black py-2.5 hover:scale-105 active:scale-95 transition-all text-xs uppercase tracking-wider shadow-soft"
+              class="btn-primary w-full py-2.5"
             >
               🔊 Play Sound
             </button>
@@ -152,13 +154,13 @@ interface AnimalCard {
           <div class="grid grid-cols-2 gap-4">
             <button
               (click)="skipAnimal()"
-              class="btn-secondary py-3.5 rounded-full font-black text-sm"
+              class="btn-secondary"
             >
               Skip
             </button>
             <button
               (click)="markAsCompleted()"
-              class="rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-black py-3.5 hover:scale-105 active:scale-95 transition-all text-sm shadow-soft"
+              class="btn-primary"
             >
               Got it! ✓
             </button>
@@ -329,6 +331,7 @@ export class AnimalsComponent implements OnInit {
     showCelebration: boolean = false;
     completedAnimals: Set<number> = new Set();
     completedCount: number = 0;
+    clickedCardIndex: number = -1;
 
     // Voice selection properties
     availableVoices: SpeechSynthesisVoice[] = [];
@@ -338,11 +341,19 @@ export class AnimalsComponent implements OnInit {
         private dataService: DataService,
         private router: Router,
         private audio: AudioService,
-        private mascot: MascotService
+        private mascot: MascotService,
+        public settingsService: SettingsService
     ) { }
 
     ngOnInit(): void {
         this.loadAvailableVoices();
+
+        // Narrate instructions on load
+        setTimeout(() => {
+            if (this.settingsService.narrationEnabledValue) {
+                this.speak("Welcome to the Wildlife Quest! Tap on any animal to learn its name, sound, and a fun fact.");
+            }
+        }, 800);
     }
 
     loadAvailableVoices(): void {
@@ -351,8 +362,8 @@ export class AnimalsComponent implements OnInit {
         if (this.availableVoices.length === 0) {
             this.availableVoices = voices;
         }
-        // Set default voice
-        if (this.availableVoices.length > 0) {
+        this.selectedVoiceIndex = this.settingsService.selectedVoiceIndexValue;
+        if (this.selectedVoiceIndex >= this.availableVoices.length) {
             this.selectedVoiceIndex = 0;
         }
     }
@@ -362,7 +373,7 @@ export class AnimalsComponent implements OnInit {
     }
 
     onVoiceChanged(): void {
-        // Voice index has been updated via ngModel
+        this.settingsService.setSelectedVoiceIndex(Number(this.selectedVoiceIndex));
     }
 
     playVoiceDemo(): void {
@@ -370,9 +381,19 @@ export class AnimalsComponent implements OnInit {
     }
 
     selectAnimal(card: AnimalCard, index: number): void {
+        this.clickedCardIndex = index;
+        setTimeout(() => this.clickedCardIndex = -1, 500);
+
         this.selectedAnimalCard = card;
         this.selectedAnimalIndex = index;
         this.showAnimalModal = true;
+
+        // Automatically narrate name and sound
+        setTimeout(() => {
+            if (this.settingsService.narrationEnabledValue && card) {
+                this.speak(`${card.name}... makes the sound... ${card.sound}`);
+            }
+        }, 400);
     }
 
     closeModal(): void {
@@ -383,7 +404,7 @@ export class AnimalsComponent implements OnInit {
 
     speakAnimal(card: AnimalCard | null | undefined): void {
         if (card) {
-            this.speak(card.name);
+            this.speak(`${card.name}... ${card.sound}`);
         }
     }
 
@@ -396,7 +417,7 @@ export class AnimalsComponent implements OnInit {
                 this.dataService.updateChildProgress(child.id, 'animals', 15);
             }
             this.audio.play('success');
-            this.mascot.celebrate('Great listening! New animal learned.');
+            this.mascot.celebrate(`Great job! You learned the ${this.selectedAnimalCard?.name}!`);
 
             setTimeout(() => {
                 this.closeModal();
@@ -416,12 +437,13 @@ export class AnimalsComponent implements OnInit {
         window.speechSynthesis.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.8;
-        utterance.pitch = 1.2;
+        utterance.rate = 0.85;
+        utterance.pitch = 1.35;
         utterance.volume = 1;
 
-        if (this.availableVoices.length > 0 && this.selectedVoiceIndex < this.availableVoices.length) {
-            utterance.voice = this.availableVoices[this.selectedVoiceIndex];
+        const voiceIdx = this.settingsService.selectedVoiceIndexValue;
+        if (this.availableVoices.length > 0 && voiceIdx < this.availableVoices.length) {
+            utterance.voice = this.availableVoices[voiceIdx];
         }
 
         window.speechSynthesis.speak(utterance);
@@ -432,11 +454,13 @@ export class AnimalsComponent implements OnInit {
         this.audio.play('levelUp');
         this.mascot.celebrate('Animal Jungle complete!');
         setTimeout(() => {
+            window.speechSynthesis.cancel();
             this.router.navigate(['/dashboard']);
         }, 2000);
     }
 
     goBack(): void {
+        window.speechSynthesis.cancel();
         this.router.navigate(['/dashboard']);
     }
 }

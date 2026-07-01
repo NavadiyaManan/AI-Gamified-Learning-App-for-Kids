@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DataService } from '@core/services/data.service';
@@ -9,13 +9,21 @@ import { Child } from '@core/models';
 import { JourneyMapComponent } from '@shared/components/journey-map.component';
 import { MissionPanelComponent } from '@shared/components/mission-panel.component';
 import { PremiumBottomNavComponent } from '@shared/components/premium-bottom-nav.component';
+import { SettingsModalComponent } from '@shared/components/settings-modal.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, JourneyMapComponent, MissionPanelComponent, PremiumBottomNavComponent],
+  imports: [CommonModule, JourneyMapComponent, MissionPanelComponent, PremiumBottomNavComponent, SettingsModalComponent],
   template: `
     <div *ngIf="currentChild" class="relative z-10 min-h-screen pb-32">
+      <!-- Floating Settings Gear Button -->
+      <button (click)="openSettings()" 
+        class="fixed top-4 right-4 md:right-8 z-50 rounded-full bg-white/95 border-4 border-white shadow-soft flex items-center justify-center text-3xl hover:scale-110 active:scale-95 w-[60px] h-[60px] min-w-[60px] min-h-[60px]"
+        aria-label="Settings">
+        ⚙️
+      </button>
+
       <!-- Home Tab View -->
       <ng-container *ngIf="activeTab === 'home'">
         <header class="px-5 pt-8 md:px-10">
@@ -169,6 +177,7 @@ import { PremiumBottomNavComponent } from '@shared/components/premium-bottom-nav
       </div>
 
       <app-premium-bottom-nav></app-premium-bottom-nav>
+      <app-settings-modal #settingsModal></app-settings-modal>
     </div>
   `,
   styles: [`
@@ -182,6 +191,7 @@ import { PremiumBottomNavComponent } from '@shared/components/premium-bottom-nav
   `]
 })
 export class DashboardComponent implements OnInit {
+  @ViewChild('settingsModal') settingsModal!: SettingsModalComponent;
   currentChild: Child | null = null;
   worlds: JourneyWorld[] = [];
   missions: Mission[] = [];
@@ -204,6 +214,11 @@ export class DashboardComponent implements OnInit {
     private audio: AudioService,
     public mascot: MascotService,
   ) {}
+
+  openSettings(): void {
+    this.audio.play('tap');
+    this.settingsModal.open();
+  }
 
   get levelProgress(): number {
     return this.currentChild ? this.currentChild.totalXP % 100 : 0;

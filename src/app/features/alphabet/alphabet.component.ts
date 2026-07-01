@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { DataService } from '@core/services/data.service';
 import { AudioService } from '@core/services/audio.service';
 import { MascotService } from '@core/services/mascot.service';
+import { SettingsService } from '@core/services/settings.service';
 import { Alphabet } from '@core/models';
 
 @Component({
@@ -115,18 +116,18 @@ import { Alphabet } from '@core/models';
         </div>
 
         <!-- Navigation buttons -->
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-3 gap-4">
           <button
             (click)="previousAlphabet()"
             [disabled]="currentIndex === 0"
-            class="btn-secondary py-4 rounded-full font-black text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            class="btn-secondary w-full text-base font-black disabled:opacity-50 disabled:cursor-not-allowed"
           >
             ← Back
           </button>
 
           <button
             (click)="skipAlphabet()"
-            class="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white font-black text-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300 shadow-soft"
+            class="btn-secondary w-full text-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300 shadow-soft"
           >
             ⭐
           </button>
@@ -134,7 +135,7 @@ import { Alphabet } from '@core/models';
           <button
             (click)="nextAlphabet()"
             [disabled]="currentIndex === alphabets.length - 1"
-            class="rounded-full bg-gradient-to-r from-pink-500 to-pink-600 text-white py-4 font-black text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 transition-all duration-300 shadow-soft"
+            class="btn-primary w-full text-base font-black disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next →
           </button>
@@ -145,7 +146,7 @@ import { Alphabet } from '@core/models';
           <p class="text-2xl font-black text-pink-600 mb-6">Great job! You've learned all alphabets! 🎉</p>
           <button
             (click)="completeLearning()"
-            class="rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-10 py-5 text-lg font-black text-white shadow-neon hover:scale-105 active:scale-95 transition-all duration-300"
+            class="btn-primary px-10 py-5 text-lg font-black text-white shadow-neon"
           >
             ✨ Earn Reward & Go Back
           </button>
@@ -179,7 +180,8 @@ export class AlphabetComponent implements OnInit {
         private dataService: DataService,
         private router: Router,
         private audio: AudioService,
-        private mascot: MascotService
+        private mascot: MascotService,
+        public settingsService: SettingsService
     ) { }
 
     ngOnInit(): void {
@@ -188,6 +190,11 @@ export class AlphabetComponent implements OnInit {
             this.currentAlphabet = this.alphabets[0];
         }
         this.loadAvailableVoices();
+
+        // Delay auto-narration on start so the voice loads properly
+        setTimeout(() => {
+            this.autoNarrate();
+        }, 800);
     }
 
     loadAvailableVoices(): void {
@@ -196,8 +203,9 @@ export class AlphabetComponent implements OnInit {
         if (this.availableVoices.length === 0) {
             this.availableVoices = voices;
         }
-        // Set default voice
-        if (this.availableVoices.length > 0) {
+        // Load index from global settings
+        this.selectedVoiceIndex = this.settingsService.selectedVoiceIndexValue;
+        if (this.selectedVoiceIndex >= this.availableVoices.length) {
             this.selectedVoiceIndex = 0;
         }
     }
@@ -207,7 +215,7 @@ export class AlphabetComponent implements OnInit {
     }
 
     onVoiceChanged(): void {
-        // Voice index has been updated via ngModel
+        this.settingsService.setSelectedVoiceIndex(Number(this.selectedVoiceIndex));
     }
 
     playVoiceDemo(): void {
@@ -219,6 +227,7 @@ export class AlphabetComponent implements OnInit {
             this.currentIndex++;
             this.currentAlphabet = this.alphabets[this.currentIndex];
             this.showCelebration = false;
+            this.autoNarrate();
         }
     }
 
@@ -227,6 +236,7 @@ export class AlphabetComponent implements OnInit {
             this.currentIndex--;
             this.currentAlphabet = this.alphabets[this.currentIndex];
             this.showCelebration = false;
+            this.autoNarrate();
         }
     }
 
@@ -252,18 +262,25 @@ export class AlphabetComponent implements OnInit {
         }
     }
 
+    autoNarrate(): void {
+        if (this.currentAlphabet && this.settingsService.narrationEnabledValue) {
+            this.speak(`${this.currentAlphabet.letter}... ${this.currentAlphabet.pronunciation}`);
+        }
+    }
+
     speak(text: string): void {
         // Cancel any ongoing speech
         window.speechSynthesis.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.8; // Slower speech for kids
-        utterance.pitch = 1.2; // Slightly higher pitch
+        utterance.rate = 0.85; // Slower speech for kids
+        utterance.pitch = 1.35; // Slightly higher pitch
         utterance.volume = 1;
 
-        // Use selected voice
-        if (this.availableVoices.length > 0 && this.selectedVoiceIndex < this.availableVoices.length) {
-            utterance.voice = this.availableVoices[this.selectedVoiceIndex];
+        // Use selected voice from settings
+        const voiceIdx = this.settingsService.selectedVoiceIndexValue;
+        if (this.availableVoices.length > 0 && voiceIdx < this.availableVoices.length) {
+            utterance.voice = this.availableVoices[voiceIdx];
         }
 
         window.speechSynthesis.speak(utterance);
@@ -283,6 +300,7 @@ export class AlphabetComponent implements OnInit {
     }
 
     goBack(): void {
+        window.speechSynthesis.cancel();
         this.router.navigate(['/dashboard']);
     }
 }

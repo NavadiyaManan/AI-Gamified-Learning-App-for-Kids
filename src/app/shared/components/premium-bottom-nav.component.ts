@@ -13,22 +13,22 @@ import { AudioService } from '@core/services/audio.service';
         [routerLink]="item.route"
         [queryParams]="item.queryParams"
         (click)="audio.play('tap')"
-        class="dock-item"
+        class="dock-item flex flex-col items-center justify-center min-h-[60px]"
         [class.active]="isActive(item)"
         [attr.aria-label]="item.label">
-        <span class="dock-icon">{{ item.icon }}</span>
-        <span class="dock-label">{{ item.label }}</span>
+        <span class="dock-icon text-3xl mb-0.5">{{ item.icon }}</span>
+        <span class="dock-label text-[10px] uppercase font-black tracking-wide">{{ item.label }}</span>
       </a>
     </nav>
   `,
 })
 export class PremiumBottomNavComponent {
   items = [
-    { label: 'Home', icon: 'Home', route: '/dashboard', queryParams: { tab: 'home' } },
-    { label: 'Map', icon: 'Map', route: '/dashboard', queryParams: { tab: 'map' } },
-    { label: 'Puzzle', icon: 'Puzzle', route: '/puzzle', queryParams: null },
-    { label: 'Rewards', icon: 'Star', route: '/rewards', queryParams: null },
-    { label: 'Profile', icon: 'You', route: '/profile-selection', queryParams: null },
+    { label: 'Home', icon: '🏠', route: '/dashboard', queryParams: { tab: 'home' } },
+    { label: 'Map', icon: '🗺️', route: '/dashboard', queryParams: { tab: 'map' } },
+    { label: 'Puzzle', icon: '🧩', route: '/puzzle', queryParams: null },
+    { label: 'Rewards', icon: '🏆', route: '/rewards', queryParams: null },
+    { label: 'Profile', icon: '👤', route: '/profile-selection', queryParams: null },
   ];
 
   constructor(public router: Router, public audio: AudioService) {}

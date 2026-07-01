@@ -5,6 +5,7 @@ import { DataService } from '@core/services/data.service';
 import { AudioService } from '@core/services/audio.service';
 import { GamificationService, InventoryItem } from '@core/services/gamification.service';
 import { MascotService } from '@core/services/mascot.service';
+import { SettingsService } from '@core/services/settings.service';
 import { Achievement, Child } from '@core/models';
 import { PremiumBottomNavComponent } from '@shared/components/premium-bottom-nav.component';
 
@@ -14,6 +15,7 @@ import { PremiumBottomNavComponent } from '@shared/components/premium-bottom-nav
   imports: [CommonModule, PremiumBottomNavComponent],
   template: `
     <div class="relative z-10 min-h-screen pb-32">
+      <!-- Header -->
       <header class="px-5 pt-8 md:px-10">
         <div class="mx-auto max-w-7xl rounded-[2rem] bg-white/85 p-6 md:p-8 shadow-soft-lg border-4 border-white">
           <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -21,12 +23,12 @@ import { PremiumBottomNavComponent } from '@shared/components/premium-bottom-nav
               <p class="section-kicker">Reward room</p>
               <h1 class="text-4xl md:text-6xl font-black text-primary">Badges, coins, and treasures</h1>
             </div>
-            <button type="button" (click)="openChest()" class="rounded-3xl bg-gradient-to-br from-accent-yellow to-primary px-6 py-4 font-black text-white shadow-neon">
-              Open chest
+            <button type="button" (click)="openChest()" class="btn-primary">
+              🎁 Open chest
             </button>
           </div>
 
-          <div class="mt-8 grid gap-4 md:grid-cols-4">
+          <div class="mt-8 grid gap-4 grid-cols-2 md:grid-cols-4">
             <div class="reward-stat"><span>Badges</span><strong>{{ unlockedAchievements.length }}</strong></div>
             <div class="reward-stat"><span>Coins</span><strong>{{ coins }}</strong></div>
             <div class="reward-stat"><span>Trophies</span><strong>{{ trophyCount }}</strong></div>
@@ -35,22 +37,23 @@ import { PremiumBottomNavComponent } from '@shared/components/premium-bottom-nav
         </div>
       </header>
 
+      <!-- Main content -->
       <main class="mx-auto max-w-7xl px-5 py-8 md:px-10">
         <section class="grid gap-5 lg:grid-cols-[1fr_.8fr]">
           <article class="rounded-[2rem] bg-white/85 p-6 shadow-soft-lg border-4 border-white">
             <p class="section-kicker">Unlocked achievements</p>
             <div *ngIf="unlockedAchievements.length; else noRewards" class="grid gap-4 md:grid-cols-2">
               <div *ngFor="let achievement of unlockedAchievements" class="rounded-3xl bg-gradient-to-br from-white to-yellow-50 p-5 shadow-soft border-4 border-accent-yellow hover:-translate-y-1">
-                <div class="text-4xl">{{ achievement.icon }}</div>
-                <h2 class="mt-3 text-xl font-black text-primary">{{ achievement.name }}</h2>
+                <div class="text-5xl select-none animate-bounce-slow">{{ achievement.icon }}</div>
+                <h2 class="mt-3 text-xl font-black text-primary font-fredoka">{{ achievement.name }}</h2>
                 <p class="mt-2 text-sm font-bold text-slate-600">{{ achievement.description }}</p>
                 <p class="mt-4 text-xs font-black text-secondary">Unlocked {{ achievement.unlockedDate | date:'MMM d' }}</p>
               </div>
             </div>
             <ng-template #noRewards>
               <div class="rounded-3xl bg-cyan-50 p-8 text-center">
-                <div class="text-6xl animate-float">Star</div>
-                <h2 class="mt-4 text-2xl font-black text-primary">No rewards yet</h2>
+                <div class="text-6xl animate-float select-none">⭐</div>
+                <h2 class="mt-4 text-2xl font-black text-primary font-fredoka">No rewards yet</h2>
                 <p class="mt-2 font-bold text-slate-600">Finish a tiny mission to unlock your first badge.</p>
                 <button type="button" (click)="goBack()" class="btn-primary mt-5">Start mission</button>
               </div>
@@ -62,50 +65,53 @@ import { PremiumBottomNavComponent } from '@shared/components/premium-bottom-nav
             <div class="space-y-4">
               <div *ngFor="let achievement of lockedAchievements" class="rounded-3xl bg-slate-50 p-4 shadow-soft">
                 <div class="flex items-center gap-4">
-                  <div class="text-3xl grayscale">{{ achievement.icon }}</div>
+                  <div class="text-4xl grayscale select-none">{{ achievement.icon }}</div>
                   <div class="min-w-0 flex-1">
                     <h3 class="text-base font-black text-slate-600">{{ achievement.name }}</h3>
                     <div class="progress-track">
                       <div class="progress-fill" [style.width.%]="achievement.progress"></div>
                     </div>
                   </div>
-                  <strong class="text-sm text-secondary">{{ achievement.progress }}%</strong>
+                  <strong class="text-sm text-secondary font-fredoka">{{ achievement.progress }}%</strong>
                 </div>
               </div>
             </div>
           </article>
         </section>
 
+        <!-- Avatar Inventory -->
         <section class="mt-8 rounded-[2rem] bg-white/85 p-6 shadow-soft-lg border-4 border-white">
           <p class="section-kicker">Avatar inventory</p>
           <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
             <button *ngFor="let item of inventory" type="button"
-              class="rounded-3xl p-5 text-center shadow-soft border-4"
+              class="rounded-3xl p-5 text-center shadow-soft border-4 min-h-[140px] flex flex-col justify-between items-center"
               [ngClass]="item.unlocked ? 'bg-gradient-to-br from-white to-green-50 border-accent-green' : 'bg-slate-100 border-white grayscale opacity-70'"
-              (click)="item.unlocked ? mascot.celebrate(item.name + ' equipped!') : mascot.encourage('Keep learning to unlock ' + item.name)">
-              <div class="text-3xl font-black text-primary">{{ item.icon }}</div>
-              <h3 class="mt-3 text-sm font-black text-primary">{{ item.name }}</h3>
+              (click)="item.unlocked ? equipItem(item) : mascot.encourage('Keep learning to unlock ' + item.name)">
+              <div class="text-4xl font-black text-primary select-none">{{ item.icon }}</div>
+              <h3 class="mt-3 text-sm font-black text-primary font-fredoka">{{ item.name }}</h3>
               <p class="mt-1 text-xs font-bold text-slate-500">{{ item.unlocked ? 'Unlocked' : 'Locked' }}</p>
             </button>
           </div>
         </section>
 
+        <!-- Trophy Wall -->
         <section class="mt-8 rounded-[2rem] bg-white/85 p-6 shadow-soft-lg border-4 border-white">
           <p class="section-kicker">Trophy wall</p>
           <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <div *ngFor="let trophy of trophies; let i = index" class="rounded-3xl bg-gradient-to-br from-amber-100 to-yellow-50 p-6 text-center shadow-soft border-4 border-white">
-              <div class="text-5xl animate-float">Cup</div>
-              <h3 class="mt-3 text-lg font-black text-primary">Level {{ (i + 1) * 5 }}</h3>
+            <div *ngFor="let trophy of trophies; let i = index" class="rounded-3xl bg-gradient-to-br from-amber-100 to-yellow-50 p-6 text-center shadow-soft border-4 border-white flex flex-col items-center">
+              <div class="text-6xl animate-float select-none">🏆</div>
+              <h3 class="mt-3 text-lg font-black text-primary font-fredoka">Level {{ (i + 1) * 5 }}</h3>
               <p class="text-xs font-bold text-secondary">{{ currentChild && currentChild.level >= (i + 1) * 5 ? 'Unlocked' : 'Locked' }}</p>
             </div>
           </div>
         </section>
       </main>
 
+      <!-- Chest Open Modal -->
       <div *ngIf="chestOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-5 backdrop-blur-sm">
-        <div class="rounded-[2rem] bg-white p-8 text-center shadow-soft-lg border-4 border-accent-yellow animate-scale-up">
-          <div class="text-7xl animate-bounce-slow">Chest</div>
-          <h2 class="mt-4 text-3xl font-black text-primary">Treasure claimed</h2>
+        <div class="rounded-[2.5rem] bg-white p-8 text-center shadow-soft-lg border-4 border-accent-yellow animate-scale-up max-w-sm w-full">
+          <div class="text-8xl animate-bounce-slow select-none">🎁</div>
+          <h2 class="mt-4 text-3xl font-black text-primary font-fredoka">Treasure Claimed!</h2>
           <p class="mt-3 font-bold text-slate-600">25 bonus coins added to your adventure wallet.</p>
           <button type="button" (click)="closeChest()" class="btn-primary mt-6 w-full">Collect</button>
         </div>
@@ -132,6 +138,7 @@ export class RewardsComponent implements OnInit {
     private audio: AudioService,
     public mascot: MascotService,
     private router: Router,
+    private settingsService: SettingsService
   ) {}
 
   ngOnInit(): void {
@@ -141,16 +148,34 @@ export class RewardsComponent implements OnInit {
 
     this.dataService.currentChild$.subscribe(child => {
       this.currentChild = child;
-      this.inventory = this.gamification.getInventory(child);
-      this.coins = this.gamification.getCoins(child);
-      this.trophyCount = this.trophies.filter((_, index) => (child?.level ?? 1) >= (index + 1) * 5).length;
+      if (child) {
+        this.inventory = this.gamification.getInventory(child);
+        this.coins = this.gamification.getCoins(child);
+        this.trophyCount = this.trophies.filter((_, index) => (child?.level ?? 1) >= (index + 1) * 5).length;
+      }
     });
+
+    // Voice narration for pre-readers
+    setTimeout(() => {
+      if (this.settingsService.narrationEnabledValue) {
+        this.speak("Welcome to the Reward Room! Look at all your badges, trophies, and unlocked avatars. Open your chest for extra coins!");
+      }
+    }, 800);
+  }
+
+  equipItem(item: InventoryItem): void {
+    this.audio.play('tap');
+    this.mascot.celebrate(`Aha! ${item.name} equipped!`);
   }
 
   openChest(): void {
     this.chestOpen = true;
     this.audio.play('reward');
-    this.mascot.celebrate('Treasure time!');
+    this.mascot.celebrate('Yay! You unlocked a treasure chest!');
+    
+    if (this.settingsService.narrationEnabledValue) {
+      this.speak("Yay! You unlocked a treasure chest! Twenty five bonus coins are added to your adventure wallet.");
+    }
   }
 
   closeChest(): void {
@@ -159,6 +184,24 @@ export class RewardsComponent implements OnInit {
   }
 
   goBack(): void {
+    window.speechSynthesis.cancel();
     this.router.navigate(['/dashboard']);
+  }
+
+  private speak(text: string): void {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.85;
+      utterance.pitch = 1.35;
+      utterance.volume = 1;
+
+      const voiceIdx = this.settingsService.selectedVoiceIndexValue;
+      const voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+      if (voices.length > 0 && voiceIdx < voices.length) {
+        utterance.voice = voices[voiceIdx];
+      }
+      window.speechSynthesis.speak(utterance);
+    }
   }
 }

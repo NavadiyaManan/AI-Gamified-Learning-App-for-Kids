@@ -33,7 +33,7 @@ export class AudioService {
       tap: [420],
       success: [523, 659, 784],
       reward: [659, 784, 988, 1175],
-      fail: [220, 196],
+      fail: [329, 392], // Softer, encouraging dual chime instead of harsh buzz
       swipe: [330, 440],
       levelUp: [523, 659, 784, 1046],
     };

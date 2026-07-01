@@ -39,7 +39,7 @@ export class GamificationService {
       {
         id: 'letters-3',
         title: 'Learn 3 alphabets',
-        icon: 'ABC',
+        icon: '🔤',
         reward: 40,
         progress: Math.min(progress?.alphabets.completed ?? 0, 3),
         total: 3,
@@ -48,7 +48,7 @@ export class GamificationService {
       {
         id: 'puzzle-1',
         title: 'Complete 1 puzzle',
-        icon: 'Puzzle',
+        icon: '🧩',
         reward: 60,
         progress: Math.min(progress?.puzzles.completed ?? 0, 1),
         total: 1,
@@ -57,7 +57,7 @@ export class GamificationService {
       {
         id: 'story-1',
         title: 'Listen to a story',
-        icon: 'Book',
+        icon: '📖',
         reward: 50,
         progress: Math.min(progress?.stories.completed ?? 0, 1),
         total: 1,
@@ -69,23 +69,23 @@ export class GamificationService {
   getWorlds(child: Child | null): JourneyWorld[] {
     const p = child?.learningProgress;
     return [
-      this.world('alphabet', 'Alphabet Island', '/alphabet', 'Aa', 'from-sky-300 to-cyan-400', p?.alphabets.completed ?? 0, 26),
-      this.world('numbers', 'Number Mountain', '/numbers', '123', 'from-amber-300 to-orange-400', p?.numbers.completed ?? 0, 10),
-      this.world('animals', 'Animal Jungle', '/animals', 'Wild', 'from-emerald-300 to-lime-400', p?.animals.completed ?? 0, 20),
-      this.world('puzzles', 'Puzzle Forest', '/puzzle', 'Logic', 'from-teal-300 to-green-500', p?.puzzles.completed ?? 0, 15),
-      this.world('stories', 'Story Castle', '/stories', 'Once', 'from-rose-300 to-fuchsia-400', p?.stories.completed ?? 0, 10),
+      this.world('alphabet', 'Alphabet Island', '/alphabet', '🔤', 'from-sky-300 to-cyan-400', p?.alphabets.completed ?? 0, 26),
+      this.world('numbers', 'Number Mountain', '/numbers', '🔢', 'from-amber-300 to-orange-400', p?.numbers.completed ?? 0, 10),
+      this.world('animals', 'Animal Jungle', '/animals', '🦁', 'from-emerald-300 to-lime-400', p?.animals.completed ?? 0, 20),
+      this.world('puzzles', 'Puzzle Forest', '/puzzle', '🧩', 'from-teal-300 to-green-500', p?.puzzles.completed ?? 0, 15),
+      this.world('stories', 'Story Castle', '/stories', '📖', 'from-rose-300 to-fuchsia-400', p?.stories.completed ?? 0, 10),
     ];
   }
 
   getInventory(child: Child | null): InventoryItem[] {
     const level = child?.level ?? 1;
     return [
-      { id: 'cap', name: 'Star Cap', type: 'hat', icon: 'Cap', unlocked: level >= 2 },
-      { id: 'crown', name: 'Tiny Crown', type: 'hat', icon: 'Crown', unlocked: level >= 8 },
-      { id: 'spark', name: 'Spark Wand', type: 'accessory', icon: 'Wand', unlocked: level >= 5 },
-      { id: 'buddy', name: 'Learning Buddy', type: 'pet', icon: 'Buddy', unlocked: level >= 10 },
-      { id: 'space', name: 'Space Room', type: 'background', icon: 'Stars', unlocked: level >= 12 },
-      { id: 'rainbow', name: 'Rainbow Theme', type: 'theme', icon: 'Theme', unlocked: level >= 4 },
+      { id: 'cap', name: 'Star Cap', type: 'hat', icon: '🎓', unlocked: level >= 2 },
+      { id: 'crown', name: 'Tiny Crown', type: 'hat', icon: '👑', unlocked: level >= 8 },
+      { id: 'spark', name: 'Spark Wand', type: 'accessory', icon: '🪄', unlocked: level >= 5 },
+      { id: 'buddy', name: 'Learning Buddy', type: 'pet', icon: '🐱', unlocked: level >= 10 },
+      { id: 'space', name: 'Space Room', type: 'background', icon: '🌌', unlocked: level >= 12 },
+      { id: 'rainbow', name: 'Rainbow Theme', type: 'theme', icon: '🎨', unlocked: level >= 4 },
     ];
   }
 

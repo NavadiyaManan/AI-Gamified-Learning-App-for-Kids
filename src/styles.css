@@ -41,15 +41,23 @@
     }
 
     .btn-primary {
-        @apply px-6 py-3 rounded-full bg-gradient-to-r from-primary to-primary-light text-white font-bold hover:from-primary-light hover:to-primary transform hover:scale-110 active:scale-95 shadow-soft;
+        @apply px-8 rounded-full bg-gradient-to-r from-primary to-primary-light text-white font-bold hover:from-primary-light hover:to-primary transform hover:scale-105 active:scale-95 shadow-soft inline-flex items-center justify-center;
+        min-height: 60px;
+        height: 60px;
     }
 
     .btn-secondary {
-        @apply px-6 py-3 rounded-full bg-gradient-to-r from-secondary to-accent-green text-white font-bold hover:from-accent-green hover:to-secondary transform hover:scale-110 active:scale-95 shadow-soft;
+        @apply px-8 rounded-full bg-gradient-to-r from-secondary to-accent-green text-white font-bold hover:from-accent-green hover:to-secondary transform hover:scale-105 active:scale-95 shadow-soft inline-flex items-center justify-center;
+        min-height: 60px;
+        height: 60px;
     }
 
     .btn-icon {
-        @apply w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl shadow-soft hover:shadow-soft-lg transform hover:scale-110 active:scale-95;
+        @apply rounded-full flex items-center justify-center font-bold text-xl shadow-soft hover:shadow-soft-lg transform hover:scale-105 active:scale-95;
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        min-height: 60px;
     }
 
     .badge {
@@ -434,4 +442,23 @@
     0% { transform: scale(0.92); }
     70% { transform: scale(1.08); }
     100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Accessibility override for reduced motion */
+.reduce-motion,
+.reduce-motion * {
+    animation: none !important;
+    transition: none !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
 }
